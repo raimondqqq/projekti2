@@ -1,0 +1,28 @@
+## Error Type
+Runtime PrismaClientInitializationError
+
+## Error Message
+
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["db"].project.findMany()` invocation in
+/Users/harisovcina/Documents/haris-starter-pack/.next/dev/server/chunks/ssr/[root-of-the-server]__d107e2e7._.js:84:155
+
+  81 ;
+  82 const dynamic = 'force-dynamic';
+  83 async function Home() {
+→ 84     const projects = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["db"].project.findMany(
+User was denied access on the database `(not available)`
+
+
+    at <unknown> (src/app/page.tsx:8:37)
+    at  Home (src/app/page.tsx:8:20)
+
+## Code Frame
+   6 |
+   7 | export default async function Home() {
+>  8 |   const projects = await db.project.findMany({
+     |                                     ^
+   9 |     orderBy: { order: "asc" },
+  10 |     select: {
+  11 |       id: true,
+
+Next.js version: 16.0.1 (Turbopack)

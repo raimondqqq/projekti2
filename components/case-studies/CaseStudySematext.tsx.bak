@@ -1,0 +1,464 @@
+"use client"
+
+import { useRef, useEffect } from "react"
+import Image from "next/image"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+// Register ScrollTrigger plugin
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger)
+}
+
+interface Project {
+  id: string
+  name: string
+  client: string
+  summary?: string | null
+  startYear: number
+  endYear?: number | null
+  heroImage: string
+  deviceMockup: string
+  deviceType: string
+  layoutVariant: string
+  comingSoon: boolean
+  caseStudy?: string | null
+  caseStudySlug?: string | null
+  services?: string
+  industry?: string
+}
+
+interface CaseStudyContentProps {
+  project: Project
+}
+
+/**
+ * Sematext Onboarding Redesign Case Study
+ * Visual-first editorial approach with immersive imagery and scroll animations
+ */
+export function CaseStudySematext({ project }: CaseStudyContentProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
+  const problemStatsRef = useRef<HTMLElement>(null)
+  const beforeAfterRef = useRef<HTMLElement>(null)
+  const step1Ref = useRef<HTMLDivElement>(null)
+  const step2Ref = useRef<HTMLDivElement>(null)
+  const step3Ref = useRef<HTMLDivElement>(null)
+  const impactRef = useRef<HTMLElement>(null)
+  const resultsRef = useRef<HTMLElement>(null)
+  const galleryRef = useRef<HTMLElement>(null)
+
+  useGSAP(() => {
+    if (!containerRef.current) return
+
+    // Find the scrollable container (parent with overflow-y-auto)
+    const scroller = containerRef.current.closest('.overflow-y-auto') as HTMLElement
+
+    // Hero parallax effect
+    if (heroRef.current && scroller) {
+      gsap.to(heroRef.current.querySelector("img"), {
+        yPercent: 30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+          scroller: scroller,
+        },
+      })
+    }
+
+    // Problem stats stagger in
+    if (problemStatsRef.current) {
+      const stats = problemStatsRef.current.querySelectorAll(".stat-item")
+      gsap.fromTo(stats,
+        { y: 60, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: problemStatsRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    }
+
+    // Before/After slide in from sides
+    if (beforeAfterRef.current) {
+      gsap.fromTo(beforeAfterRef.current.querySelector(".before-card"),
+        { x: -100, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: beforeAfterRef.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+      gsap.fromTo(beforeAfterRef.current.querySelector(".after-card"),
+        { x: 100, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: beforeAfterRef.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    }
+
+    // Steps - alternating animations
+    const animateStep = (ref: React.RefObject<HTMLDivElement>, fromLeft: boolean) => {
+      if (!ref.current) return
+      const image = ref.current.querySelector(".step-image")
+      const text = ref.current.querySelector(".step-text")
+
+      gsap.fromTo(image,
+        { x: fromLeft ? -80 : 80, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+      gsap.fromTo(text,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          delay: 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    }
+
+    animateStep(step1Ref, true)
+    animateStep(step2Ref, false)
+    animateStep(step3Ref, true)
+
+    // Impact section - scale and fade with parallax
+    if (impactRef.current) {
+      gsap.fromTo(impactRef.current.querySelector(".impact-content"),
+        { scale: 0.8, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: impactRef.current,
+            start: "top 60%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+
+      // Parallax on background
+      gsap.to(impactRef.current.querySelector("img"), {
+        yPercent: 20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: impactRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        },
+      })
+    }
+
+    // Results - stagger up
+    if (resultsRef.current) {
+      const results = resultsRef.current.querySelectorAll(".result-item")
+      gsap.fromTo(results,
+        { y: 80, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: resultsRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    }
+
+    // Gallery - stagger with scale
+    if (galleryRef.current) {
+      const images = galleryRef.current.querySelectorAll(".gallery-item")
+      gsap.fromTo(images,
+        { scale: 0.8, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "back.out(1.2)",
+          scrollTrigger: {
+            trigger: galleryRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    }
+
+  }, [])
+
+  return (
+    <div ref={containerRef} className="space-y-32 md:space-y-48">
+      {/* Opening Statement - Editorial Style */}
+      <section className="max-w-4xl">
+        <div className="space-y-8">
+          <p className="text-2xl md:text-4xl font-light leading-relaxed text-foreground/90">
+            Sematext's onboarding flow was losing 60% of new users before completion.
+            We redesigned the entire experience—reducing friction, clarifying value,
+            and making complex observability feel approachable.
+          </p>
+          <div className="flex items-center gap-8 text-sm uppercase tracking-widest text-foreground/50">
+            <span>Product Design</span>
+            <span className="w-1 h-1 rounded-full bg-foreground/30" />
+            <span>UX Research</span>
+            <span className="w-1 h-1 rounded-full bg-foreground/30" />
+            <span>2023–2024</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Hero Visual - Full Width Device Mockup with Parallax */}
+      <section ref={heroRef} className="relative w-full h-[60vh] md:h-[70vh] -mx-4 md:-mx-8 overflow-hidden bg-foreground/5">
+        <Image
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80"
+          alt="Analytics dashboard interface"
+          fill
+          className="object-cover will-change-transform"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+      </section>
+
+      {/* The Problem - Visual Stats */}
+      <section ref={problemStatsRef} className="space-y-12">
+        <h2 className="text-5xl md:text-7xl font-light leading-none">
+          The<br/>Problem
+        </h2>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-6 md:gap-12">
+          <div className="stat-item space-y-2">
+            <div className="text-5xl md:text-7xl font-light text-foreground/40">60%</div>
+            <p className="text-xs md:text-sm text-foreground/60 uppercase tracking-wider">Drop-off Rate</p>
+          </div>
+          <div className="stat-item space-y-2">
+            <div className="text-5xl md:text-7xl font-light text-foreground/40">45m</div>
+            <p className="text-xs md:text-sm text-foreground/60 uppercase tracking-wider">Time to Value</p>
+          </div>
+          <div className="stat-item space-y-2">
+            <div className="text-5xl md:text-7xl font-light text-foreground/40">↑</div>
+            <p className="text-xs md:text-sm text-foreground/60 uppercase tracking-wider">Support Tickets</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Before/After Visual Comparison */}
+      <section ref={beforeAfterRef} className="space-y-8">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Before */}
+          <div className="before-card space-y-4">
+            <div className="text-xs uppercase tracking-widest text-foreground/40">Before</div>
+            <div className="relative aspect-[4/3] bg-foreground/5 rounded-lg overflow-hidden border border-foreground/10">
+              <Image
+                src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&q=80"
+                alt="Complex overwhelming interface"
+                fill
+                className="object-cover opacity-60"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-red-950/30">
+                <span className="text-8xl font-light text-foreground/20">×</span>
+              </div>
+            </div>
+          </div>
+
+          {/* After */}
+          <div className="after-card space-y-4">
+            <div className="text-xs uppercase tracking-widest text-foreground/40">After</div>
+            <div className="relative aspect-[4/3] bg-foreground/5 rounded-lg overflow-hidden border border-foreground/10">
+              <Image
+                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"
+                alt="Clean organized interface"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-green-950/20">
+                <span className="text-8xl font-light text-green-500/30">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Visual Flow - Three Steps */}
+      <section className="space-y-12">
+        <h2 className="text-5xl md:text-7xl font-light leading-none">
+          Our<br/>Approach
+        </h2>
+
+        {/* Step-by-step visual progression */}
+        <div className="space-y-8 md:space-y-12">
+          {/* Step 1 */}
+          <div ref={step1Ref} className="grid md:grid-cols-12 gap-8 items-center">
+            <div className="step-text md:col-span-4 space-y-3">
+              <div className="text-sm text-foreground/40 uppercase tracking-widest">Step 01</div>
+              <h3 className="text-2xl md:text-3xl font-light">Progressive Disclosure</h3>
+              <p className="text-foreground/70">Start simple, reveal complexity gradually</p>
+            </div>
+            <div className="step-image md:col-span-8 relative aspect-video bg-foreground/5 rounded-lg overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&q=80"
+                alt="Simple step-by-step interface"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div ref={step2Ref} className="grid md:grid-cols-12 gap-8 items-center">
+            <div className="step-image md:col-span-8 md:order-1 relative aspect-video bg-foreground/5 rounded-lg overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80"
+                alt="Interactive demo dashboard"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="step-text md:col-span-4 md:order-2 space-y-3">
+              <div className="text-sm text-foreground/40 uppercase tracking-widest">Step 02</div>
+              <h3 className="text-2xl md:text-3xl font-light">Demo Environment</h3>
+              <p className="text-foreground/70">Explore before committing</p>
+            </div>
+          </div>
+
+          {/* Step 3 */}
+          <div ref={step3Ref} className="grid md:grid-cols-12 gap-8 items-center">
+            <div className="step-text md:col-span-4 space-y-3">
+              <div className="text-sm text-foreground/40 uppercase tracking-widest">Step 03</div>
+              <h3 className="text-2xl md:text-3xl font-light">Contextual Guidance</h3>
+              <p className="text-foreground/70">Help when you need it</p>
+            </div>
+            <div className="step-image md:col-span-8 relative aspect-video bg-foreground/5 rounded-lg overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=80"
+                alt="Helpful tooltips and guidance"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Full-Width Visual Showcase with Parallax */}
+      <section ref={impactRef} className="relative w-full h-[80vh] -mx-4 md:-mx-8 overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80"
+          alt="Success metrics visualization"
+          fill
+          className="object-cover will-change-transform"
+        />
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="impact-content text-center space-y-6 px-8">
+            <div className="text-6xl md:text-8xl font-light text-foreground">+30%</div>
+            <p className="text-xl md:text-2xl font-light text-foreground/80">
+              Onboarding Completion Rate
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Results - Compact Grid */}
+      <section ref={resultsRef} className="grid md:grid-cols-3 gap-8 md:gap-12">
+        <div className="result-item space-y-2">
+          <div className="text-6xl md:text-7xl font-light text-foreground">+30%</div>
+          <p className="text-sm text-foreground/60 uppercase tracking-wider">Completion</p>
+        </div>
+
+        <div className="result-item space-y-2">
+          <div className="text-6xl md:text-7xl font-light text-foreground">-60%</div>
+          <p className="text-sm text-foreground/60 uppercase tracking-wider">Time to Value</p>
+        </div>
+
+        <div className="result-item space-y-2">
+          <div className="text-6xl md:text-7xl font-light text-foreground">-45%</div>
+          <p className="text-sm text-foreground/60 uppercase tracking-wider">Support Tickets</p>
+        </div>
+      </section>
+
+      {/* Visual Gallery - Three Images */}
+      <section ref={galleryRef} className="grid md:grid-cols-3 gap-4 md:gap-6">
+        <div className="gallery-item relative aspect-square bg-foreground/5 rounded-lg overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80"
+            alt="Collaborative design process"
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div className="gallery-item relative aspect-square bg-foreground/5 rounded-lg overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80"
+            alt="User testing session"
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div className="gallery-item relative aspect-square bg-foreground/5 rounded-lg overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&q=80"
+            alt="Final implementation"
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+      </section>
+
+      {/* Final Statement - Minimal */}
+      <section className="max-w-3xl mx-auto text-center pt-16 pb-8">
+        <p className="text-xl md:text-2xl font-light leading-relaxed text-foreground/70">
+          From overwhelming to empowering—a complete transformation
+          of the first-user experience.
+        </p>
+      </section>
+    </div>
+  )
+}
