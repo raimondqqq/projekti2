@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth required models
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Add your custom models below this line
+
+// Theoria project models
+model Project {
+  id              String   @id @default(cuid())
+  name            String
+  client          String
+  summary         String? // Short project description for hover preview
+  startYear       Int
+  endYear         Int? // null if ongoing
+  services        String // JSON or comma-separated
+  industry        String // JSON or comma-separated
+  website         String? // Project website URL
+  heroImage       String
+  deviceMockup    String
+  deviceType      String // "laptop" | "mobile"
+  layoutVariant   String // "A" | "B" | "C" | "D" | "E" | "F"
+  caseStudy       String? // markdown content, null if coming soon (legacy)
+  caseStudySlug   String? // slug for custom component-based case study (e.g., "acme-corp")
+  caseStudyImages String? // JSON array of Vercel Blob URLs for case study images
+  comingSoon      Boolean  @default(true)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TeamMember {
+  id         String  @id @default(cuid())
+  name       String
+  role       String
+  babyPhoto  String
+  adultPhoto String
+  email      String?
+  linkedin   String?
+  cvLink     String?
+  order      Int     @default(0)
+}
